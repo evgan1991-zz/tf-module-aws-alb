@@ -50,7 +50,7 @@ module "https_listeners" {
   root_domain                      = "${var.root_domain}"
   most_recent_certificate          = "${var.most_recent_certificate}"
   default_https_tcp_listeners_port = "${var.default_https_tcp_listeners_port}"
-  dns_name                         = "${var.own_dns_name}"
+  dns_name                         = "${var.own_dns_name == "" ? module.alb.dns_name : var.own_dns_name}" #???
   zone_id                          = "${module.alb.load_balancer_zone_id}"
   name                             = "${var.own_name == "" ? local.auto_generated_name : var.own_name}"
 }
