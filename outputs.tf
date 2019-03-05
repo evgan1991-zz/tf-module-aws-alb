@@ -23,11 +23,6 @@ output "alb_dns_name" {
   value       = "${module.alb.dns_name}"
 }
 
-output "alb_custom_dns_name" {
-  description = "The custom DNS name of the load balancer."
-  value       = "${module.https_listeners.alb_custom_dns_name}"
-}
-
 output "alb_http_tcp_listener_arns" {
   description = "The ARN of the TCP and HTTP load balancer listeners created."
   value       = "${module.alb.http_tcp_listener_arns}"
@@ -78,11 +73,25 @@ output "alb_target_group_names" {
   value       = "${module.alb.target_group_names}"
 }
 
-output "root_domain_hosted_zone_id" {
-  value = "${module.https_listeners.root_domain_hosted_zone_id}"
+output "aws_acm_certificate_arn" {
+  value = "${local.aws_acm_certificate_arn}"
 }
 
-output "aws_acm_certificate_list" {
-  description = "List of maps aws acm certificates - certificate_arn and port"
-  value       = "${module.https_listeners.https_listeners_list}"
+output "aws_acm_certificate_map" {
+  value = "${local.aws_acm_certificate_map}"
 }
+
+output "https_listeners_list" {
+  value       = "${local.https_listeners_list}"
+  description = "List of maps aws acm certificates - certificate_arn and port"
+}
+
+output "root_domain_hosted_zone_id" {
+  value = "${element(data.aws_route53_zone.alb.*.zone_id, "0")}"
+}
+
+output "alb_custom_dns_name" {
+  value       = "${element(aws_route53_record.alb.*.name, "0")}"
+  description = "The custom DNS name of the load balancer."
+}
+
