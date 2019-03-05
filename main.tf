@@ -9,17 +9,6 @@ locals {
 
 data "aws_region" "current" {}
 
-module "https_listeners" {
-  source                           = "local-https_listeners-creater/"
-  acm_cert_domain                  = "${var.acm_cert_domain}"
-  root_domain                      = "${var.root_domain}"
-  most_recent_certificate          = "${var.most_recent_certificate}"
-  default_https_tcp_listeners_port = "${var.default_https_tcp_listeners_port}"
-  dns_name                         = "${var.own_dns_name == "" ? module.alb.dns_name : var.own_dns_name}" #???
-  zone_id                          = "${module.alb.load_balancer_zone_id}"
-  name                             = "${var.own_name == "" ? local.auto_generated_name : var.own_name}"
-}
-
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "3.5.0"
@@ -53,4 +42,15 @@ module "alb" {
   load_balancer_is_internal        = "${var.load_balancer_is_internal}"
   load_balancer_update_timeout     = "${var.load_balancer_update_timeout}"
   log_location_prefix              = "${var.log_location_prefix}"
+}
+
+module "https_listeners" {
+  source                           = "local-https_listeners-creater/"
+  acm_cert_domain                  = "${var.acm_cert_domain}"
+  root_domain                      = "${var.root_domain}"
+  most_recent_certificate          = "${var.most_recent_certificate}"
+  default_https_tcp_listeners_port = "${var.default_https_tcp_listeners_port}"
+  dns_name                         = "${var.own_dns_name == "" ? module.alb.dns_name : var.own_dns_name}" #???
+  zone_id                          = "${module.alb.load_balancer_zone_id}"
+  name                             = "${var.own_name == "" ? local.auto_generated_name : var.own_name}"
 }
