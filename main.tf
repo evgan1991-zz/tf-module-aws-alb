@@ -4,18 +4,12 @@ locals {
     Environment = "${var.environment}"
   }
 
-  auto_generated_name = "${var.project}-${var.environment}-${data.aws_region.current.name}.${var.root_domain}"
-
-
-
-
-
+  auto_generated_name          = "${var.project}-${var.environment}-${data.aws_region.current.name}.${var.root_domain}"
   aws_acm_certificate_arn      = "${ var.acm_cert_domain == "" ? "" : element(concat(data.aws_acm_certificate.this.*.arn, list("")), "0" ) }"
   aws_acm_certificate_map_arn  = "${merge(map(), map( "${var.acm_cert_domain}" == "" ? "" : "certificate_arn", "${"${var.acm_cert_domain}" == "" ? "" : "${local.aws_acm_certificate_arn}"}"         ))}"
   aws_acm_certificate_map_port = "${merge(map(), map( "${var.acm_cert_domain}" == "" ? "" : "port",            "${"${var.acm_cert_domain}" == "" ? "" : "${var.default_https_tcp_listeners_port}"}"  ))}"
   aws_acm_certificate_map      = "${merge(map(), local.aws_acm_certificate_map_arn, local.aws_acm_certificate_map_port)}"
   https_listeners_list         = "${list(local.aws_acm_certificate_map)}"
-
 }
 
 data "aws_region" "current" {}
@@ -30,7 +24,6 @@ module "alb" {
   vpc_id             = "${var.vpc_id}"
 
   /// Configure listeners and target groups ///////
-  # https_listeners                  = "${ module.https_listeners.https_listeners_list }"
   https_listeners                  = "${local.https_listeners_list}"
   https_listeners_count            = "${ var.acm_cert_domain != "" ? var.default_https_tcp_listeners_count : 0 }"
   http_tcp_listeners               = "${list(map("port", "${var.default_http_tcp_listeners_port}", "protocol", "HTTP"))}"
@@ -55,41 +48,6 @@ module "alb" {
   load_balancer_update_timeout     = "${var.load_balancer_update_timeout}"
   log_location_prefix              = "${var.log_location_prefix}"
 }
-
-# module "https_listeners" {
-#   source                           = "local-https_listeners-creater/"
-#   acm_cert_domain                  = "${var.acm_cert_domain}"
-#   root_domain                      = "${var.root_domain}"
-#   most_recent_certificate          = "${var.most_recent_certificate}"
-#   default_https_tcp_listeners_port = "${var.default_https_tcp_listeners_port}"
-#   dns_name                         = "${var.own_dns_name != "" ? var.own_dns_name : module.alb.dns_name}" #???
-#   zone_id                          = "${module.alb.load_balancer_zone_id}"
-#   name                             = "${var.own_name != "" ? var.own_name : local.auto_generated_name}"
-# }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 data "aws_acm_certificate" "this" {
   count       = "${var.acm_cert_domain != "" ? 1 : 0}"

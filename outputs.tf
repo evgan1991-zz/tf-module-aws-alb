@@ -73,15 +73,7 @@ output "alb_target_group_names" {
   value       = "${module.alb.target_group_names}"
 }
 
-output "aws_acm_certificate_arn" {
-  value = "${local.aws_acm_certificate_arn}"
-}
-
-output "aws_acm_certificate_map" {
-  value = "${local.aws_acm_certificate_map}"
-}
-
-output "https_listeners_list" {
+output "aws_acm_certificate_list" {
   value       = "${local.https_listeners_list}"
   description = "List of maps aws acm certificates - certificate_arn and port"
 }
@@ -94,4 +86,3 @@ output "alb_custom_dns_name" {
   value       = "${element(aws_route53_record.alb.*.name, "0")}"
   description = "The custom DNS name of the load balancer."
 }
-
